@@ -1,6 +1,5 @@
 package com.spring.jasper_report.controller;
 
-import com.spring.jasper_report.entity.Datas;
 import com.spring.jasper_report.service.ReportService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +16,14 @@ public class ReportController {
     @Autowired
     private ReportService reportService;
 
-    @GetMapping("/get-all")
-    public ResponseEntity<List<Datas>> getAll() {
+    @GetMapping("/export-pdf")
+    public ResponseEntity<String> exportPdf() {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(this.reportService.getAllReport());
-        } catch (Exception e) {
+            this.reportService.exportReportPDF();
+            return ResponseEntity.status(HttpStatus.OK).body("export PDF success");
+        }catch (Exception e) {
             log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("export pdf failed");
         }
     }
 }

@@ -1,28 +1,38 @@
 package com.spring.jasper_report.service;
 
-import com.spring.jasper_report.entity.Datas;
-import com.spring.jasper_report.repository.DataRepository;
+import com.spring.jasper_report.repository.StudentRepository;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
 public class ReportServiceImpl implements ReportService{
 
     @Autowired
-    private DataRepository dataRepository;
+    private StudentRepository studentRepository;
 
     @Override
-    public List<Datas> getAllReport() {
+    public void exportReportPDF() {
         try {
-           return this.dataRepository.findAll();
+            String filePath = "C:\\Users\\admin\\Desktop\\Code\\JavaCode\\ExportPDF\\src\\main\\resources\\Simple_Blue.jrxml";
+
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("studentName", "Hoang");
+
+            JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(this.studentRepository.findAll());
+            JasperReport report = JasperCompileManager.compileReport(filePath);
+            JasperPrint print =  JasperFillManager.fillReport(report, params, jrBeanCollectionDataSource);
+
+            JasperExportManager.exportReportToPdfFile(print,"D:\\test.pdf");
+            System.out.println("report create ...");
+
         }catch (Exception e) {
             log.error(e.getMessage());
-            return Collections.emptyList();
         }
     }
 }
